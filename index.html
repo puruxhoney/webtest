@@ -1,9 +1,346 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Hello Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Food Preference Survey</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff7b54, #ffb26b);
+            min-height: 100vh;
+            padding: 30px 15px;
+            color: #222;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #e85d04;
+            margin-bottom: 10px;
+        }
+
+        .intro {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            background: white;
+        }
+
+        .preference {
+            margin-bottom: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #e85d04;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #d94801;
+        }
+
+        button:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #16803c;
+        }
+
+        .error {
+            color: #c1121f;
+        }
+
+        .note {
+            font-size: 13px;
+            color: #777;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 20px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Home</h1>
+
+<div class="container">
+
+    <h1>🍽️ Food Preference Survey</h1>
+
+    <p class="intro">
+        We are collecting food preferences from people in our area.
+        Please tell us your top 5 food choices.
+    </p>
+
+    <form id="foodForm">
+
+        <label for="name">Your Name</label>
+
+        <input
+            type="text"
+            id="name"
+            placeholder="Enter your name"
+            required
+        >
+
+
+        <label>1st Preference</label>
+
+        <select id="food1" class="preference" required>
+            <option value="">Select a food</option>
+        </select>
+
+
+        <label>2nd Preference</label>
+
+        <select id="food2" class="preference" required>
+            <option value="">Select a food</option>
+        </select>
+
+
+        <label>3rd Preference</label>
+
+        <select id="food3" class="preference" required>
+            <option value="">Select a food</option>
+        </select>
+
+
+        <label>4th Preference</label>
+
+        <select id="food4" class="preference" required>
+            <option value="">Select a food</option>
+        </select>
+
+
+        <label>5th Preference</label>
+
+        <select id="food5" class="preference" required>
+            <option value="">Select a food</option>
+        </select>
+
+
+        <button type="submit" id="submitButton">
+            Submit My Preferences
+        </button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <p class="note">
+        Your response will be used for food preference analysis.
+    </p>
+
+</div>
+
+
+<script>
+
+    // Change this list to add/remove foods
+    const foods = [
+        "Biryani",
+        "Dosa",
+        "Momos",
+        "Pizza",
+        "Samosa",
+        "Chowmein",
+        "Paneer",
+        "Chaat",
+        "Burger",
+        "Pav Bhaji",
+        "Fried Rice",
+        "Noodles",
+        "Chicken Curry",
+        "Butter Chicken",
+        "Fish Curry",
+        "Roti",
+        "Paratha",
+        "Idli",
+        "Puri",
+        "Aloo Tikki",
+        "Litti Chokha",
+        "Other"
+    ];
+
+
+    // Put the food choices into every dropdown
+    const dropdowns = document.querySelectorAll(".preference");
+
+    dropdowns.forEach(dropdown => {
+
+        foods.forEach(food => {
+
+            const option = document.createElement("option");
+
+            option.value = food;
+            option.textContent = food;
+
+            dropdown.appendChild(option);
+
+        });
+
+    });
+
+
+    // IMPORTANT:
+    // We will put your Google Apps Script URL here later.
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwQPnwf_Xg8CSnDtg4VtQxR9e9MJokF6OpFcK0Ydd-uMhNpy-zc3S8ng-nFV45Bs1pM7g/exec";
+
+
+    document.getElementById("foodForm").addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+
+        const preferences = [
+            document.getElementById("food1").value,
+            document.getElementById("food2").value,
+            document.getElementById("food3").value,
+            document.getElementById("food4").value,
+            document.getElementById("food5").value
+        ];
+
+
+        // Make sure the same food isn't selected twice
+        const uniquePreferences = new Set(preferences);
+
+        if (uniquePreferences.size !== 5) {
+
+            showMessage(
+                "Please select 5 different foods.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const button = document.getElementById("submitButton");
+
+        button.disabled = true;
+        button.textContent = "Submitting...";
+
+
+        const data = {
+            name: name,
+            preference1: preferences[0],
+            preference2: preferences[1],
+            preference3: preferences[2],
+            preference4: preferences[3],
+            preference5: preferences[4]
+        };
+
+
+        fetch(scriptURL, {
+
+            method: "POST",
+
+            mode: "no-cors",
+
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+
+            body: JSON.stringify(data)
+
+        })
+
+        .then(() => {
+
+            showMessage(
+                "✅ Thank you! Your preferences have been recorded.",
+                "success"
+            );
+
+            document.getElementById("foodForm").reset();
+
+            button.disabled = false;
+            button.textContent = "Submit My Preferences";
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            showMessage(
+                "Something went wrong. Please try again.",
+                "error"
+            );
+
+            button.disabled = false;
+            button.textContent = "Submit My Preferences";
+
+        });
+
+    });
+
+
+    function showMessage(text, type) {
+
+        const message = document.getElementById("message");
+
+        message.textContent = text;
+
+        message.className = type;
+
+    }
+
+</script>
+
 </body>
 </html>
